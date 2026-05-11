@@ -38,9 +38,25 @@ pyautogui.FAILSAFE = False
 
 CONFIG_FILE = os.path.join(os.path.dirname(__file__), "buttons_config.json")
 
+_DEFAULT_CONFIG = {
+    "title": "STREAMDECK",
+    "brightness": 100,
+    "buttons": [
+        {"id": i, "label": "BTN {}".format(i),
+         "color": [30, 30, 60],
+         "action": {"type": "hotkey", "keys": ""}}
+        for i in range(10)
+    ]
+}
+
 def load_config():
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    if not os.path.exists(CONFIG_FILE):
+        return json.loads(json.dumps(_DEFAULT_CONFIG))   # deep copy
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return json.loads(json.dumps(_DEFAULT_CONFIG))
 
 def save_config(cfg):
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
@@ -175,7 +191,7 @@ def execute_action(action):
     elif kind == "type":
         text = action.get("text", "")
         if text:
-            pyautogui.typewrite(text, interval=0.05)
+            pyautogui.write(text, interval=0.05)
 
 
 # ---------------------------------------------------------------------------

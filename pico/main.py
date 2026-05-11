@@ -244,7 +244,7 @@ def poll_serial():
         try:
             ch = sys.stdin.read(1)
         except Exception:
-            break
+            continue   # skip this character; keep processing other events
         if ch in ("\n", "\r"):
             if _line_buf:
                 _parse_command(_line_buf)
