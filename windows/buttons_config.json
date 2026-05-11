@@ -1,0 +1,67 @@
+{
+  "_comment": "Streamdeck button configuration. Edit this file to customise each button.",
+  "title": "STREAMDECK",
+  "brightness": 100,
+  "buttons": [
+    {
+      "id": 0,
+      "label": "Mute",
+      "color": [60, 0, 0],
+      "action": {"type": "hotkey", "keys": "ctrl+shift+m"}
+    },
+    {
+      "id": 1,
+      "label": "Cam",
+      "color": [0, 60, 0],
+      "action": {"type": "hotkey", "keys": "ctrl+shift+v"}
+    },
+    {
+      "id": 2,
+      "label": "Scene 1",
+      "color": [0, 0, 80],
+      "action": {"type": "hotkey", "keys": "ctrl+F1"}
+    },
+    {
+      "id": 3,
+      "label": "Scene 2",
+      "color": [0, 0, 80],
+      "action": {"type": "hotkey", "keys": "ctrl+F2"}
+    },
+    {
+      "id": 4,
+      "label": "Play",
+      "color": [0, 80, 0],
+      "action": {"type": "hotkey", "keys": "ctrl+alt+p"}
+    },
+    {
+      "id": 5,
+      "label": "Stop",
+      "color": [80, 0, 0],
+      "action": {"type": "hotkey", "keys": "ctrl+alt+s"}
+    },
+    {
+      "id": 6,
+      "label": "Vol Up",
+      "color": [40, 40, 0],
+      "action": {"type": "hotkey", "keys": "volumeup"}
+    },
+    {
+      "id": 7,
+      "label": "Vol Dn",
+      "color": [40, 40, 0],
+      "action": {"type": "hotkey", "keys": "volumedown"}
+    },
+    {
+      "id": 8,
+      "label": "Browser",
+      "color": [0, 40, 60],
+      "action": {"type": "launch", "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"}
+    },
+    {
+      "id": 9,
+      "label": "Custom",
+      "color": [60, 0, 60],
+      "action": {"type": "hotkey", "keys": "ctrl+c"}
+    }
+  ]
+}
