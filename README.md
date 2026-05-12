@@ -7,12 +7,12 @@ Press a button → the Windows host app runs the action you configured (hotkey, 
 
 ## Hardware
 
-| Component | Details |
-|---|---|
-| Microcontroller | Raspberry Pi Pico (RP2040) |
-| Display | 1.8" 128×160 SPI TFT – ST7735S / ST7789 (3.3 V) |
-| Buttons | 10 × keyboard switches (MX, Alps, or similar) |
-| Power | USB from PC |
+| Component | Details | AliExpress |
+|---|---|---|
+| Microcontroller | Raspberry Pi Pico (RP2040) | [Buy on AliExpress](https://www.aliexpress.com/wholesale?SearchText=raspberry+pi+pico+rp2040) |
+| Display | 1.8" 128×160 SPI TFT – ST7735S / ST7789 (3.3 V) | [Buy on AliExpress](https://www.aliexpress.com/wholesale?SearchText=1.8+inch+ST7735S+TFT+SPI+display+128x160) |
+| Buttons | 10 × keyboard switches (MX, Alps, or similar) | [Buy on AliExpress](https://www.aliexpress.com/wholesale?SearchText=cherry+mx+mechanical+keyboard+switches) |
+| Power | USB from PC | — |
 
 ### Physical layout
 
