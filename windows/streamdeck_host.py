@@ -297,12 +297,12 @@ class StreamdeckApp(tk.Tk):
         enc_cfg = self._cfg.get("encoder", {})
         self._enc_frames = {}
         enc_rows = [
-            ("cw",    "CW  (clockwise)   "),
-            ("ccw",   "CCW (counter-CW)  "),
-            ("press", "Press (click)     "),
+            ("cw",    "CW (clockwise)"),
+            ("ccw",   "CCW (counter-CW)"),
+            ("press", "Press (click)"),
         ]
         for r, (key, label) in enumerate(enc_rows):
-            ttk.Label(frm_enc, text=label, width=20).grid(
+            ttk.Label(frm_enc, text=label).grid(
                 row=r, column=0, padx=4, pady=2, sticky="w")
             action = enc_cfg.get(key, {})
             type_var = tk.StringVar(value=action.get("type", "hotkey"))

@@ -65,7 +65,8 @@ Download [OpenSCAD](https://openscad.org/) (free, cross-platform) to open and ex
 
 The base has a **7.5 mm circular hole** on the right side wall (x = 90 face).  
 Recommended part: **EC11 rotary encoder** (6 mm shaft, ~12 mm body, M7 thread on bushing).  
-The `pot_hole_d = 7.5 mm` is a **clearance hole** sized to pass the encoder's threaded bushing; it is not a pilot hole for tapping.
+The `pot_hole_d = 7.5 mm` is a **clearance hole** sized to pass the encoder's M7 threaded bushing (M7 major Ø = 7.0 mm → 0.25 mm clearance per side).  
+If your bushing fits tightly, increase `pot_hole_d` to 7.8–8.0 mm in `streamdeck_base.scad` for easier assembly.
 
 Steps:
 1. Insert the encoder from inside the shell; the bushing pokes through the right wall.
