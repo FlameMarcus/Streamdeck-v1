@@ -8,7 +8,7 @@ Download [OpenSCAD](https://openscad.org/) (free, cross-platform) to open and ex
 ## Design highlights
 
 - **Single-file parametric design** – all dimensions are variables at the top of `streamdeck_enclosure.scad`.  Changing `tilt_angle`, `wall_t`, or `btn_spacing` cascades through every piece of geometry automatically.
-- **Angled / wedge body** – the faceplate tilts 15 ° toward the user.  The base has a flat bottom; the rear wall is taller than the front wall to achieve the tilt.  Side profile looks like a slim wedge.
+- **Angled / wedge body** – the faceplate tilts 15° toward the user.  The base has a flat bottom; the rear wall is taller than the front wall to achieve the tilt.  Side profile looks like a slim wedge.
 - **Spherically-rounded 3-D corners** – the outer shell uses a `hull()` of corner spheres so every external corner (bottom, top, and edges) is smoothly filleted (r = 3.5 mm).
 - **Tight internal corners** – all interior corners use r = 1 mm fillets.
 - **Micro-USB cutout** – 12 × 7 mm slot on the front face, centred on the Pico's USB port.
@@ -39,7 +39,7 @@ Download [OpenSCAD](https://openscad.org/) (free, cross-platform) to open and ex
 | `wall_t` | 2.5 mm | Uniform wall / floor / ceiling thickness |
 | `shell_w` | 90 mm | Outer width (X, left–right) |
 | `shell_d` | 145 mm | Outer depth (Y, front–back) |
-| `tilt_angle` | 15 ° | Faceplate tilt; cascades to rear_wall_h and plate_l |
+| `tilt_angle` | 15° | Faceplate tilt; cascades to rear_wall_h and plate_l |
 | `front_wall_h` | 12 mm | Front wall height above desk |
 | `fillet_ext` | 3.5 mm | External corner fillet radius |
 | `fillet_int` | 1.0 mm | Internal corner fillet radius |

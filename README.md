@@ -219,7 +219,7 @@ Streamdeck-v1/
 
 The `3d_model/` folder contains a single parametric [OpenSCAD](https://openscad.org/) file that generates a sleek, angled two-piece enclosure:
 
-- **Faceplate** – 15 ° tilted plate with a recessed TFT display window (1 mm retaining lip) and 10 × MX switch holes with chamfered inner edges
+- **Faceplate** – 15° tilted plate with a recessed TFT display window (1 mm retaining lip) and 10 × MX switch holes with chamfered inner edges
 - **Base shell** – flat-bottomed wedge body with Raspberry Pi Pico standoffs, a 12 × 7 mm Micro-USB cutout on the front face, a TFT display ledge, a **7 mm EC11 encoder hole** on the right side wall, and a cable management channel on the underside
 
 All parameters (tilt angle, wall thickness, button spacing, tolerances, etc.) are variables at the top of [`3d_model/streamdeck_enclosure.scad`](3d_model/streamdeck_enclosure.scad).
