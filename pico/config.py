@@ -51,3 +51,18 @@ BTN_PINS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # GP0 … GP9
 
 # How many milliseconds a button must be stable before we accept the change
 DEBOUNCE_MS = 30
+
+# --- Rotary encoder (EC11) -------------------------------------------------
+# ┌─────────────────────────────────────────────────────────┐
+# │  EC11 encoder  →  Raspberry Pi Pico                     │
+# │                                                          │
+# │  CLK  (A pin)  →  GP10  (Pin 14)                        │
+# │  DT   (B pin)  →  GP11  (Pin 15)                        │
+# │  SW   (button) →  GP12  (Pin 16)                        │
+# │  +             →  3.3 V                                 │
+# │  GND           →  GND                                   │
+# └─────────────────────────────────────────────────────────┘
+# Internal pull-ups are enabled; all three pins idle HIGH.
+ENC_CLK = 10   # GP10  CLK / A – direction channel
+ENC_DT  = 11   # GP11  DT  / B – direction channel
+ENC_SW  = 12   # GP12  push-button switch (active LOW)

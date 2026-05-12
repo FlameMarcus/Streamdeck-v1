@@ -46,7 +46,12 @@ _DEFAULT_CONFIG = {
          "color": [30, 30, 60],
          "action": {"type": "hotkey", "keys": ""}}
         for i in range(10)
-    ]
+    ],
+    "encoder": {
+        "cw":    {"type": "hotkey", "keys": "volumeup"},
+        "ccw":   {"type": "hotkey", "keys": "volumedown"},
+        "press": {"type": "hotkey", "keys": "volumemute"}
+    }
 }
 
 def load_config():
@@ -135,13 +140,19 @@ class PicoConnection:
         parts = line.split(":", 1)
         if len(parts) == 2:
             event = parts[0].upper()
-            try:
-                idx = int(parts[1])
-            except ValueError:
-                return
-            cb = self._callbacks.get(event.lower())
-            if cb:
-                cb(idx)
+            value = parts[1]
+            if event == "ENCODER":
+                cb = self._callbacks.get("encoder")
+                if cb:
+                    cb(value)          # value is "CW", "CCW", "PRESS", or "RELEASE"
+            else:
+                try:
+                    idx = int(value)
+                except ValueError:
+                    return
+                cb = self._callbacks.get(event.lower())
+                if cb:
+                    cb(idx)
 
     def wait_ready(self, timeout=10):
         deadline = time.time() + timeout
@@ -279,9 +290,34 @@ class StreamdeckApp(tk.Tk):
         ttk.Button(frm_btm, text="Push to Pico",
                    command=self._push_config).pack(side="left", padx=4)
 
+        # --- Rotary encoder config ---
+        frm_enc = ttk.LabelFrame(self, text="Rotary Encoder (EC11)")
+        frm_enc.grid(row=3, column=0, sticky="ew", **pad)
+
+        enc_cfg = self._cfg.get("encoder", {})
+        self._enc_frames = {}
+        enc_rows = [
+            ("cw",    "CW  (clockwise)   "),
+            ("ccw",   "CCW (counter-CW)  "),
+            ("press", "Press (click)     "),
+        ]
+        for r, (key, label) in enumerate(enc_rows):
+            ttk.Label(frm_enc, text=label, width=20).grid(
+                row=r, column=0, padx=4, pady=2, sticky="w")
+            action = enc_cfg.get(key, {})
+            type_var = tk.StringVar(value=action.get("type", "hotkey"))
+            val_var  = tk.StringVar(value=self._action_value(action))
+            ttk.Combobox(frm_enc, textvariable=type_var,
+                         values=["hotkey", "launch", "type"],
+                         width=7, state="readonly").grid(
+                row=r, column=1, padx=2, pady=2)
+            ttk.Entry(frm_enc, textvariable=val_var, width=22).grid(
+                row=r, column=2, padx=2, pady=2)
+            self._enc_frames[key] = {"act_type": type_var, "act_val": val_var}
+
         # --- Log ---
         frm_log = ttk.LabelFrame(self, text="Log")
-        frm_log.grid(row=3, column=0, sticky="nsew", **pad)
+        frm_log.grid(row=4, column=0, sticky="nsew", **pad)
         self._log = scrolledtext.ScrolledText(frm_log, height=6, width=60,
                                               state="disabled", font=("Consolas", 9))
         self._log.pack(fill="both", expand=True)
@@ -335,6 +371,7 @@ class StreamdeckApp(tk.Tk):
             self._conn = PicoConnection(port)
             self._conn.on("press",   self._on_press)
             self._conn.on("release", self._on_release)
+            self._conn.on("encoder", self._on_encoder)
             self._conn.on("ready",   self._on_pico_ready)
             self._conn.connect()
             self._status_var.set("Connected")
@@ -366,6 +403,21 @@ class StreamdeckApp(tk.Tk):
     def _on_release(self, idx):
         self._log_msg("Button {} released".format(idx))
 
+    def _on_encoder(self, direction):
+        direction = direction.strip().upper()
+        self._log_msg("Encoder: {}".format(direction))
+        enc_cfg = self._cfg.get("encoder", {})
+        action  = None
+        if direction == "CW":
+            action = enc_cfg.get("cw")
+        elif direction == "CCW":
+            action = enc_cfg.get("ccw")
+        elif direction == "PRESS":
+            action = enc_cfg.get("press")
+        if action:
+            threading.Thread(target=execute_action,
+                             args=(action,), daemon=True).start()
+
     # ------------------------------------------------------------------
     # Config
     # ------------------------------------------------------------------
@@ -383,6 +435,18 @@ class StreamdeckApp(tk.Tk):
                 btn["action"] = {"type": "launch", "path": val}
             elif kind == "type":
                 btn["action"] = {"type": "type", "text": val}
+
+        enc = {}
+        for key, ui in self._enc_frames.items():
+            kind = ui["act_type"].get()
+            val  = ui["act_val"].get()
+            if kind == "hotkey":
+                enc[key] = {"type": "hotkey", "keys": val}
+            elif kind == "launch":
+                enc[key] = {"type": "launch", "path": val}
+            elif kind == "type":
+                enc[key] = {"type": "type", "text": val}
+        self._cfg["encoder"] = enc
 
     def _save_config(self):
         self._collect_config_from_ui()

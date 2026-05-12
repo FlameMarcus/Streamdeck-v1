@@ -4,16 +4,21 @@
 # What this does:
 #   1. Initialises the ST7735S TFT display.
 #   2. Monitors 10 keyboard-switch buttons (2 columns × 5 rows).
-#   3. Sends button events to the host PC over USB serial (CDC).
-#   4. Receives label/colour updates from the host PC and redraws the display.
+#   3. Monitors an EC11 rotary encoder (rotation + push-button).
+#   4. Sends button/encoder events to the host PC over USB serial (CDC).
+#   5. Receives label/colour updates from the host PC and redraws the display.
 #
 # USB serial protocol (plain text, newline-terminated):
-#   Pico → PC  :  PRESS:<n>          – button n (0-9) pressed
-#   Pico → PC  :  RELEASE:<n>        – button n released
-#   Pico → PC  :  READY              – sent once on boot
-#   PC   → Pico:  LABEL:<n>:<text>   – set label for button n
+#   Pico → PC  :  PRESS:<n>            – button n (0-9) pressed
+#   Pico → PC  :  RELEASE:<n>          – button n released
+#   Pico → PC  :  ENCODER:CW           – encoder turned clockwise
+#   Pico → PC  :  ENCODER:CCW          – encoder turned counter-clockwise
+#   Pico → PC  :  ENCODER:PRESS        – encoder push-button pressed
+#   Pico → PC  :  ENCODER:RELEASE      – encoder push-button released
+#   Pico → PC  :  READY                – sent once on boot
+#   PC   → Pico:  LABEL:<n>:<text>     – set label for button n
 #   PC   → Pico:  COLOR:<n>:<r>,<g>,<b> – set background colour for button n
-#   PC   → Pico:  BRIGHT:<0-100>     – set backlight brightness (PWM)
+#   PC   → Pico:  BRIGHT:<0-100>       – set backlight brightness (PWM)
 # ---------------------------------------------------------------------------
 
 import sys
@@ -50,6 +55,11 @@ _bl_pwm.duty_u16(65535)  # 100% by default
 
 # Buttons – input with internal pull-up; press = LOW
 _buttons = [Pin(p, Pin.IN, Pin.PULL_UP) for p in config.BTN_PINS]
+
+# Rotary encoder – all three pins idle HIGH (pull-up); active = LOW
+_enc_clk = Pin(config.ENC_CLK, Pin.IN, Pin.PULL_UP)
+_enc_dt  = Pin(config.ENC_DT,  Pin.IN, Pin.PULL_UP)
+_enc_sw  = Pin(config.ENC_SW,  Pin.IN, Pin.PULL_UP)
 
 # ---------------------------------------------------------------------------
 # Display layout constants
@@ -230,6 +240,51 @@ def poll_buttons():
 
 
 # ---------------------------------------------------------------------------
+# Encoder state / debounce
+# ---------------------------------------------------------------------------
+#
+# Rotation detection: CLK falling edge + DT level at that instant.
+#   CLK falls, DT is HIGH  →  clockwise (CW)
+#   CLK falls, DT is LOW   →  counter-clockwise (CCW)
+#
+# Push-button: same debounce logic as keyboard buttons.
+# ---------------------------------------------------------------------------
+
+_enc_last_clk    = 1   # idle HIGH (pull-up)
+_enc_sw_state    = 1   # idle HIGH (pull-up)
+_enc_sw_last_raw = 1
+_enc_sw_last_ms  = 0
+
+
+def poll_encoder():
+    global _enc_last_clk, _enc_sw_state, _enc_sw_last_raw, _enc_sw_last_ms
+    now = time.ticks_ms()
+
+    # -- Rotation: detect CLK falling edge --
+    clk = _enc_clk.value()
+    if clk != _enc_last_clk:
+        _enc_last_clk = clk
+        if clk == 0:   # falling edge
+            if _enc_dt.value() == 1:
+                send("ENCODER:CW")
+            else:
+                send("ENCODER:CCW")
+
+    # -- Push-button: debounced --
+    sw_raw = _enc_sw.value()
+    if sw_raw != _enc_sw_last_raw:
+        _enc_sw_last_raw = sw_raw
+        _enc_sw_last_ms  = now
+    elif time.ticks_diff(now, _enc_sw_last_ms) >= config.DEBOUNCE_MS:
+        if sw_raw != _enc_sw_state:
+            _enc_sw_state = sw_raw
+            if sw_raw == 0:
+                send("ENCODER:PRESS")
+            else:
+                send("ENCODER:RELEASE")
+
+
+# ---------------------------------------------------------------------------
 # Serial input (non-blocking via select/poll)
 # ---------------------------------------------------------------------------
 
@@ -262,5 +317,6 @@ send("READY")
 
 while True:
     poll_buttons()
+    poll_encoder()
     poll_serial()
     time.sleep_ms(5)

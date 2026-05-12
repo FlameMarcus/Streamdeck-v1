@@ -63,5 +63,11 @@
       "color": [60, 0, 60],
       "action": {"type": "hotkey", "keys": "ctrl+c"}
     }
-  ]
+  ],
+  "encoder": {
+    "_comment": "Actions fired by the EC11 rotary encoder on the right side of the enclosure.",
+    "cw":    {"type": "hotkey", "keys": "volumeup"},
+    "ccw":   {"type": "hotkey", "keys": "volumedown"},
+    "press": {"type": "hotkey", "keys": "volumemute"}
+  }
 }
