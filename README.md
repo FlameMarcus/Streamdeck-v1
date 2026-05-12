@@ -12,6 +12,7 @@ Press a button → the Windows host app runs the action you configured (hotkey, 
 | Microcontroller | Raspberry Pi Pico (RP2040) | [Buy on AliExpress](https://www.aliexpress.com/wholesale?SearchText=raspberry+pi+pico+rp2040) |
 | Display | 1.8" 128×160 SPI TFT – ST7735S / ST7789 (3.3 V) | [Buy on AliExpress](https://www.aliexpress.com/wholesale?SearchText=1.8+inch+ST7735S+TFT+SPI+display+128x160) |
 | Buttons | 10 × keyboard switches (MX, Alps, or similar) | [Buy on AliExpress](https://www.aliexpress.com/wholesale?SearchText=cherry+mx+mechanical+keyboard+switches) |
+| Rotary encoder | EC11 rotary encoder with push-button (5-pin, 6 mm shaft) | [Buy on AliExpress](https://www.aliexpress.com/wholesale?SearchText=EC11+rotary+encoder+switch+5pin+6mm) |
 | Power | USB from PC | — |
 
 ### Physical layout
@@ -26,6 +27,7 @@ Press a button → the Windows host app runs the action you configured (hotkey, 
 │  BTN 6   │  BTN 7   │
 │  BTN 8   │  BTN 9   │
 └──────────┴───────────┘
+                        ← [KNOB] on right side wall
 ```
 
 ---
@@ -64,6 +66,25 @@ Internal pull-ups are enabled so you don't need external resistors.
 | BTN 7  | GP7     |
 | BTN 8  | GP8     |
 | BTN 9  | GP9     |
+
+### Rotary encoder (EC11) → Pico
+
+The EC11 has 5 pins.  Connect them as follows (internal pull-ups enabled; no external resistors needed):
+
+| EC11 pin | Pico pin | Pico GP |
+|----------|----------|---------|
+| CLK (A)  | Pin 14   | GP10    |
+| DT  (B)  | Pin 15   | GP11    |
+| SW (button) | Pin 16 | GP12  |
+| +        | 3.3 V    | Pin 36  |
+| GND      | GND      | Pin 38  |
+
+**How the encoder works in the firmware:**
+- Turning CW → fires `ENCODER:CW` → host executes the `cw` action (default: volume up)  
+- Turning CCW → fires `ENCODER:CCW` → host executes the `ccw` action (default: volume down)  
+- Pressing the knob → fires `ENCODER:PRESS` / `ENCODER:RELEASE` → host executes the `press` action (default: mute)  
+
+You can change these actions in `windows/buttons_config.json` under the `"encoder"` key, or live in the host app's **Rotary Encoder** panel.
 
 ---
 
@@ -119,6 +140,16 @@ Each button has:
 }
 ```
 
+The `encoder` section in the same file controls the rotary knob:
+
+```jsonc
+"encoder": {
+  "cw":    {"type": "hotkey", "keys": "volumeup"},    // turn clockwise
+  "ccw":   {"type": "hotkey", "keys": "volumedown"},  // turn counter-clockwise
+  "press": {"type": "hotkey", "keys": "volumemute"}   // press the knob
+}
+```
+
 **Action types:**
 
 | Type | What it does | Value field |
@@ -151,16 +182,16 @@ You can change labels and actions there too – click **Save config** then **Pus
 Streamdeck-v1/
 ├── 3d_model/
 │   ├── streamdeck_faceplate.scad  # Top plate (display window + switch holes)
-│   ├── streamdeck_base.scad       # Shell (Pico standoffs, USB cutout, TFT ledge)
+│   ├── streamdeck_base.scad       # Shell (Pico standoffs, USB cutout, TFT ledge, encoder hole)
 │   ├── streamdeck_assembly.scad   # Exploded preview (not for printing)
 │   └── README.md                  # Print settings and parameter guide
 ├── pico/
-│   ├── config.py          # All pin numbers live here
+│   ├── config.py          # All pin numbers live here (including encoder GP10/11/12)
 │   ├── st7735s.py         # ST7735S display driver (no extra libs needed)
 │   └── main.py            # Firmware – runs on the Pico
 └── windows/
-    ├── streamdeck_host.py # GUI host app for Windows
-    └── buttons_config.json # Button labels, colours, actions
+    ├── streamdeck_host.py  # GUI host app for Windows
+    └── buttons_config.json # Button labels, colours, actions + encoder actions
 ```
 
 ---
@@ -170,7 +201,7 @@ Streamdeck-v1/
 The `3d_model/` folder contains parametric [OpenSCAD](https://openscad.org/) models for a two-piece enclosure:
 
 - **Faceplate** – top plate with a TFT display window and 10 MX switch holes
-- **Base shell** – hollow body with Raspberry Pi Pico standoffs, a Micro-USB cutout, and a TFT display ledge
+- **Base shell** – hollow body with Raspberry Pi Pico standoffs, a Micro-USB cutout, a TFT display ledge, and a **7.5 mm hole on the right side wall** for the EC11 encoder bushing
 
 See [`3d_model/README.md`](3d_model/README.md) for export, print settings, and how to adjust dimensions.
 
@@ -184,6 +215,8 @@ See [`3d_model/README.md`](3d_model/README.md) for export, print settings, and h
 | Display colours look wrong | Try changing `0xC8` → `0x00` in the `_MADCTL` line in `st7735s.py` |
 | Host app can't find the Pico | Enter the COM port manually (check Device Manager → Ports) |
 | Buttons don't respond | Make sure one leg of each switch goes to the listed GP pin and the other to GND |
+| Encoder doesn't respond | Check CLK→GP10, DT→GP11, SW→GP12, + →3.3 V, GND→GND; verify `ENC_CLK/DT/SW` in `config.py` |
+| Encoder turns the wrong direction | Swap the CLK and DT wires (or swap `ENC_CLK` and `ENC_DT` values in `config.py`) |
 | `pip install` fails | Make sure Python 3.8+ is installed; try `py -m pip install ...` |
 
 ---
