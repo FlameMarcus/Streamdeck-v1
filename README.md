@@ -149,6 +149,11 @@ You can change labels and actions there too – click **Save config** then **Pus
 
 ```
 Streamdeck-v1/
+├── 3d_model/
+│   ├── streamdeck_faceplate.scad  # Top plate (display window + switch holes)
+│   ├── streamdeck_base.scad       # Shell (Pico standoffs, USB cutout, TFT ledge)
+│   ├── streamdeck_assembly.scad   # Exploded preview (not for printing)
+│   └── README.md                  # Print settings and parameter guide
 ├── pico/
 │   ├── config.py          # All pin numbers live here
 │   ├── st7735s.py         # ST7735S display driver (no extra libs needed)
@@ -157,6 +162,17 @@ Streamdeck-v1/
     ├── streamdeck_host.py # GUI host app for Windows
     └── buttons_config.json # Button labels, colours, actions
 ```
+
+---
+
+## 3D-printed enclosure
+
+The `3d_model/` folder contains parametric [OpenSCAD](https://openscad.org/) models for a two-piece enclosure:
+
+- **Faceplate** – top plate with a TFT display window and 10 MX switch holes
+- **Base shell** – hollow body with Raspberry Pi Pico standoffs, a Micro-USB cutout, and a TFT display ledge
+
+See [`3d_model/README.md`](3d_model/README.md) for export, print settings, and how to adjust dimensions.
 
 ---
 

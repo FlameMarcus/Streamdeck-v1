@@ -1,0 +1,82 @@
+// =============================================================
+//  Streamdeck-v1  –  Faceplate / Top Plate
+//  Print face-down for best hole accuracy.
+//  All dimensions in millimetres.
+// =============================================================
+
+// ── Global parameters ────────────────────────────────────────
+plate_w        = 90;      // overall width
+plate_h        = 145;     // overall height
+plate_thick    = 3;       // plate thickness (1.5–3 mm typical)
+
+wall           = 5;       // side wall / margin width
+
+// ── TFT display window ───────────────────────────────────────
+tft_win_w      = 29.5;    // window width  (active area 28.7 + 0.8 tolerance)
+tft_win_h      = 36.5;    // window height (active area 35.7 + 0.8 tolerance)
+// Centre the window horizontally; place it near the top
+tft_x          = (plate_w - tft_win_w) / 2;
+tft_y          = plate_h - wall - tft_win_h;   // from bottom of plate
+
+// ── MX switch holes (2 × 5 grid, 19.05 mm pitch) ────────────
+sw_hole        = 14.0;    // MX snap-fit = 14.0; looser = 14.2
+sw_pitch       = 19.05;   // standard MX centre-to-centre
+sw_cols        = 2;
+sw_rows        = 5;
+// Grid is centred horizontally, placed below the display
+sw_grid_w      = (sw_cols - 1) * sw_pitch;
+sw_grid_x0     = (plate_w - sw_grid_w) / 2 - sw_hole / 2;
+sw_grid_y0     = wall;    // bottom-most row starts at wall margin
+
+// ── Corner screw holes (M3) ───────────────────────────────────
+screw_d        = 3.2;     // M3 clearance
+screw_margin   = 3.5;     // from corner
+
+// ── Snap-fit tabs ────────────────────────────────────────────
+//   Four tabs on the underside edge that click into the base.
+tab_w          = 8;
+tab_h          = 1.5;     // protrusion below plate
+tab_thick      = 1.5;
+
+eps = 0.01;               // small overlap to avoid z-fighting
+
+// =============================================================
+module faceplate() {
+    difference() {
+        // ── Solid plate ──────────────────────────────────────
+        cube([plate_w, plate_h, plate_thick]);
+
+        // ── TFT display window ───────────────────────────────
+        translate([tft_x, tft_y, -eps])
+            cube([tft_win_w, tft_win_h, plate_thick + 2*eps]);
+
+        // ── 2×5 switch holes ─────────────────────────────────
+        for (col = [0 : sw_cols - 1])
+            for (row = [0 : sw_rows - 1])
+                translate([
+                    sw_grid_x0 + col * sw_pitch,
+                    sw_grid_y0 + row * sw_pitch,
+                    -eps
+                ])
+                    cube([sw_hole, sw_hole, plate_thick + 2*eps]);
+
+        // ── Corner M3 screw holes ────────────────────────────
+        for (cx = [screw_margin, plate_w - screw_margin - screw_d])
+            for (cy = [screw_margin, plate_h - screw_margin - screw_d])
+                translate([cx, cy, -eps])
+                    cylinder(d=screw_d, h=plate_thick + 2*eps, $fn=20);
+    }
+
+    // ── Snap tabs (on bottom face, pointing down) ─────────────
+    //   Left / right pairs at roughly 1/3 and 2/3 of the height
+    for (ty = [plate_h * 0.33, plate_h * 0.66]) {
+        // left tab
+        translate([0, ty - tab_w/2, -tab_h])
+            cube([tab_thick, tab_w, tab_h]);
+        // right tab
+        translate([plate_w - tab_thick, ty - tab_w/2, -tab_h])
+            cube([tab_thick, tab_w, tab_h]);
+    }
+}
+
+faceplate();
