@@ -199,10 +199,11 @@ You can change labels and actions there too – click **Save config** then **Pus
 ```
 Streamdeck-v1/
 ├── 3d_model/
-│   ├── streamdeck_faceplate.scad  # Top plate (display window + switch holes)
-│   ├── streamdeck_base.scad       # Shell (Pico standoffs, USB cutout, TFT ledge, encoder hole)
-│   ├── streamdeck_assembly.scad   # Exploded preview (not for printing)
-│   └── README.md                  # Print settings and parameter guide
+│   ├── streamdeck_enclosure.scad  # PRIMARY FILE – complete single-file parametric design
+│   ├── streamdeck_faceplate.scad  # Thin wrapper: renders faceplate() only (for STL export)
+│   ├── streamdeck_base.scad       # Thin wrapper: renders base_shell() only (for STL export)
+│   ├── streamdeck_assembly.scad   # Thin wrapper: renders assembly() preview (not for printing)
+│   └── README.md                  # Print settings and full parameter guide
 ├── pico/
 │   ├── config.py          # All pin numbers live here (including encoder GP10/11/12)
 │   ├── st7735s.py         # ST7735S display driver (no extra libs needed)
@@ -216,12 +217,14 @@ Streamdeck-v1/
 
 ## 3D-printed enclosure
 
-The `3d_model/` folder contains parametric [OpenSCAD](https://openscad.org/) models for a two-piece enclosure:
+The `3d_model/` folder contains a single parametric [OpenSCAD](https://openscad.org/) file that generates a sleek, angled two-piece enclosure:
 
-- **Faceplate** – top plate with a TFT display window and 10 MX switch holes
-- **Base shell** – hollow body with Raspberry Pi Pico standoffs, a Micro-USB cutout, a TFT display ledge, and a **7.5 mm hole on the right side wall** for the EC11 encoder bushing
+- **Faceplate** – 15° tilted plate with a recessed TFT display window (1 mm retaining lip) and 10 × MX switch holes with chamfered inner edges
+- **Base shell** – flat-bottomed wedge body with Raspberry Pi Pico standoffs, a 12 × 7 mm Micro-USB cutout on the front face, a TFT display ledge, a **7 mm EC11 encoder hole** on the right side wall, and a cable management channel on the underside
 
-See [`3d_model/README.md`](3d_model/README.md) for export, print settings, and how to adjust dimensions.
+All parameters (tilt angle, wall thickness, button spacing, tolerances, etc.) are variables at the top of [`3d_model/streamdeck_enclosure.scad`](3d_model/streamdeck_enclosure.scad).
+
+See [`3d_model/README.md`](3d_model/README.md) for export instructions, print settings, and a full parameter reference.
 
 ---
 
