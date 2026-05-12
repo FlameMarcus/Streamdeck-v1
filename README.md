@@ -1,6 +1,6 @@
 # Streamdeck-v1
 
-A DIY Stream Deck built with a **Raspberry Pi Pico**, a **1.8-inch 128×160 ST7735S TFT display**, and **10 keyboard switches** arranged in a 2×5 grid.  
+A DIY Stream Deck built with a **Raspberry Pi Pico**, a **1.8-inch 128×160 ST7735S TFT display**, and **10 keyboard switches** arranged in a 5×2 grid (5 rows, 2 columns).  
 Press a button → the Windows host app runs the action you configured (hotkey, app launch, or typed text).
 
 ---
@@ -79,6 +79,8 @@ The EC11 has 5 pins.  Connect them as follows (internal pull-ups enabled; no ext
 | +        | 3.3 V    | Pin 36  |
 | GND      | GND      | Pin 38  |
 
+> **Note:** Both the TFT display and the rotary encoder draw 3.3 V from the Pico. Pin 36 is the Pico's 3.3V output — you can share it between both components using a small breadboard or by daisy-chaining the wires. Total current draw is well within the Pico's 300 mA limit.
+
 **How the encoder works in the firmware:**
 - Turning CW → fires `ENCODER:CW` → host executes the `cw` action (default: volume up)  
 - Turning CCW → fires `ENCODER:CCW` → host executes the `ccw` action (default: volume down)  
@@ -119,8 +121,10 @@ The Pico will run `main.py` automatically every time it boots.
 
 Open a Command Prompt or PowerShell and run:
 
+> **Requires Python 3.8 or newer.** Check your version with `python --version`.
+
 ```bat
-pip install pyserial pyautogui
+pip install -r windows/requirements.txt
 ```
 
 ### 4 – Configure your buttons
@@ -128,27 +132,41 @@ pip install pyserial pyautogui
 Edit `windows/buttons_config.json`.  
 Each button has:
 
-```jsonc
+```json
 {
   "id": 0,
-  "label": "Mute",          // text shown on the TFT
-  "color": [60, 0, 0],      // background colour [R, G, B]  0-255
+  "label": "Mute",
+  "color": [60, 0, 0],
   "action": {
-    "type": "hotkey",        // "hotkey" | "launch" | "type"
-    "keys": "ctrl+shift+m"  // key combo (hotkey), path (launch), or text (type)
+    "type": "hotkey",
+    "keys": "ctrl+shift+m"
   }
 }
 ```
 
+| Field | Description |
+|---|---|
+| `id` | Zero-based button index (0–9) |
+| `label` | Text displayed on the TFT screen |
+| `color` | Background color as `[R, G, B]`, each value 0–255 |
+| `action.type` | Action type: `"hotkey"`, `"launch"`, or `"type"` |
+| `action.keys` | Key combo (hotkey), file path (launch), or text string (type) |
+
 The `encoder` section in the same file controls the rotary knob:
 
-```jsonc
+```json
 "encoder": {
-  "cw":    {"type": "hotkey", "keys": "volumeup"},    // turn clockwise
-  "ccw":   {"type": "hotkey", "keys": "volumedown"},  // turn counter-clockwise
-  "press": {"type": "hotkey", "keys": "volumemute"}   // press the knob
+  "cw":    {"type": "hotkey", "keys": "volumeup"},
+  "ccw":   {"type": "hotkey", "keys": "volumedown"},
+  "press": {"type": "hotkey", "keys": "volumemute"}
 }
 ```
+
+| Field | Description |
+|---|---|
+| `cw` | Action fired when turning the encoder clockwise |
+| `ccw` | Action fired when turning the encoder counter-clockwise |
+| `press` | Action fired when pressing the encoder knob |
 
 **Action types:**
 
@@ -191,7 +209,7 @@ Streamdeck-v1/
 │   └── main.py            # Firmware – runs on the Pico
 └── windows/
     ├── streamdeck_host.py  # GUI host app for Windows
-    └── buttons_config.json # Button labels, colours, actions + encoder actions
+    └── buttons_config.json # Button labels, colors, actions + encoder actions
 ```
 
 ---
@@ -212,7 +230,7 @@ See [`3d_model/README.md`](3d_model/README.md) for export, print settings, and h
 | Problem | Fix |
 |---|---|
 | Display shows nothing | Check wiring; try swapping `col_offset`/`row_offset` in `st7735s.py` (change `col_offset=2, row_offset=1` to `0,0`) |
-| Display colours look wrong | Try changing `0xC8` → `0x00` in the `_MADCTL` line in `st7735s.py` |
+| Display colors look wrong | Try changing `0xC8` → `0x00` in the `_MADCTL` line in `st7735s.py` |
 | Host app can't find the Pico | Enter the COM port manually (check Device Manager → Ports) |
 | Buttons don't respond | Make sure one leg of each switch goes to the listed GP pin and the other to GND |
 | Encoder doesn't respond | Check CLK→GP10, DT→GP11, SW→GP12, + →3.3 V, GND→GND; verify `ENC_CLK/DT/SW` in `config.py` |
