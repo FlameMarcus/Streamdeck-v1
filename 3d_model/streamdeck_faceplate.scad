@@ -31,7 +31,7 @@ sw_chamfer     = 0.6;     // inner-face bevel for easy switch insertion
 
 // ── Corner screw holes (M3) ────────────────────────────────────
 screw_d        = 3.2;     // M3 clearance
-screw_margin   = 4.5;     // increased clearance for rounded corners
+screw_margin   = 4.5;     // increased from 3.5 mm for rounded corner clearance
 
 // ── Snap-fit tabs ─────────────────────────────────────────────
 //   Four tabs on the underside edge that click into the base slots.

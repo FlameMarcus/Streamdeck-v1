@@ -9,11 +9,16 @@
 use <streamdeck_faceplate.scad>
 use <streamdeck_base.scad>
 
-// ── Layout constants (keep in sync with the individual files) ──
+// ── Layout constants ───────────────────────────────────────────
+// WARNING: these must be kept in sync with streamdeck_base.scad.
+// OpenSCAD `use <>` imports only module definitions, not variables,
+// so the values are repeated here.
 gap        = 15;   // exploded-view separation
-base_depth = 18;   // must match shell_d in streamdeck_base.scad
+base_depth = 18;   // must match shell_d  in streamdeck_base.scad
 
-// ── Encoder position (matches pot_y / pot_z in streamdeck_base.scad)
+// ── Encoder preview position ───────────────────────────────────
+// Must match pot_y (shell_h * 0.6) and pot_z (shell_d / 2) in
+// streamdeck_base.scad.  Update both places if those values change.
 enc_y = 145 * 0.6;   // shell_h * 0.6
 enc_z = 18  / 2;     // shell_d / 2
 

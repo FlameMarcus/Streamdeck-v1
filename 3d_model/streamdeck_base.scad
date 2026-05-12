@@ -60,7 +60,7 @@ pot_z          = shell_d / 2;     // vertically centred on the wall
 boss_d         = 7;
 boss_h         = shell_d - wall;  // nearly full depth
 boss_hole_d    = 2.5;             // M3 self-tap pilot hole
-screw_margin   = 4.5;             // increased clearance for rounded corners
+screw_margin   = 4.5;             // increased from 3.5 mm for rounded corner clearance
 
 eps = 0.01;
 

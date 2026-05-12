@@ -64,7 +64,8 @@ Download [OpenSCAD](https://openscad.org/) (free, cross-platform) to open and ex
 ## Rotary encoder / potentiometer
 
 The base has a **7.5 mm circular hole** on the right side wall (x = 90 face).  
-Recommended part: **EC11 rotary encoder** (6 mm shaft, ~12 mm body, M7 bushing).
+Recommended part: **EC11 rotary encoder** (6 mm shaft, ~12 mm body, M7 thread on bushing).  
+The `pot_hole_d = 7.5 mm` is a **clearance hole** sized to pass the encoder's threaded bushing; it is not a pilot hole for tapping.
 
 Steps:
 1. Insert the encoder from inside the shell; the bushing pokes through the right wall.
